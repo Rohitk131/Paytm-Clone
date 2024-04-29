@@ -1,36 +1,54 @@
-import mongoose from 'mongoose'
-mongoose.conect('mongodb://localhost:27017/paytm', {useNewUrlParser: true, useUnifiedTopology: true});
-const userTable = new mongoose.Schema({
+// backend/db.js
+const mongoose = require('mongoose');
+
+mongoose.connect("mongodb://localhost:27017/paytm")
+
+// Create a Schema for Users
+const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: true, 
+        required: true,
         unique: true,
         trim: true,
-        minlength: 3,
-        maxlength: 15,
         lowercase: true,
+        minLength: 3,
+        maxLength: 30
     },
-    password:{
+    password: {
         type: String,
         required: true,
-        minlength: 8,
-
+        minLength: 6
     },
     firstName: {
         type: String,
         required: true,
         trim: true,
-        maxlength: 20,
+        maxLength: 50
     },
     lastName: {
         type: String,
         required: true,
         trim: true,
-        maxlength: 20,
+        maxLength: 50
+    }
+});
+
+const accountSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId, // Reference to User model
+        ref: 'User',
+        required: true
     },
+    balance: {
+        type: Number,
+        required: true
+    }
+});
 
-})
+const Account = mongoose.model('Account', accountSchema);
+const User = mongoose.model('User', userSchema);
 
-const User = mongoose.model('User', userTable);
-
-export default User;
+module.exports = {
+	User,
+  Account,
+};
